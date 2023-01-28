@@ -9,6 +9,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -29,6 +30,7 @@ jobs:
           context: .
           platforms: linux/arm64, linux/amd64
           push: true
+          file: prebuild.Dockerfile
           tags: |
             ezzah/actions-app-token:latest
             ezzah/actions-app-token:${{ steps.vars.outputs.sha_short }}
