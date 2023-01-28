@@ -63,7 +63,7 @@ class GitHubApp(GitHub):
         
     def get_jwt(self):
         """
-        This is needed to retrieve the installation access token (for debugging). 
+        This is needed to retrieve the installation access token (for debugging).
         
         Useful for debugging purposes.  Must call .decode() on returned object to get string.
         """
@@ -149,4 +149,4 @@ if __name__ == '__main__':
     assert token, 'Token not returned!'
 
     print(f"::add-mask::{token}")
-    print(f"::set-output name=app_token::{token}")
+    print(f"app_token={token} >> $GITHUB_OUTPUT")

@@ -1,4 +1,4 @@
-FROM python:3.6-slim-stretch
+FROM python:slim-bullseye
 
 RUN pip install \
     cryptography==2.6.1 \
@@ -9,6 +9,6 @@ RUN pip install \
 COPY token_getter.py app/
 COPY entrypoint.sh app/
 RUN chmod u+x app/entrypoint.sh
-WORKDIR app/
+WORKDIR /app
 
 CMD /app/entrypoint.sh

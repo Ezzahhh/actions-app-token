@@ -5,51 +5,50 @@ jobs:
   build-temp-container:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      
+      - uses: actions/checkout@v3
+
       - name: build-temp-container
         run: |
           echo ${PASSWORD} | docker login -u $USERNAME --password-stdin
-          docker build -t hamelsmu/app-token:temp -f prebuild.Dockerfile .
-          docker push hamelsmu/app-token:temp
+          docker build -t ezzah/actions-app-token:temp -f prebuild.Dockerfile .
+          docker push ezzah/actions-app-token:temp
         env:
-          USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
   test-container:
     needs: [build-temp-container]
     runs-on: ubuntu-latest
     steps:
-  
-    - uses: actions/checkout@master
-      
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v1
-    #   env:
-    #     INPUT_APP_PEM: ${{ secrets.APP_PEM }}
-    #     INPUT_APP_ID: ${{ secrets.APP_ID }}
+      - uses: actions/checkout@v3
 
-    # tested with https://github.com/apps/fastpages-chatops
-    - name: test
-      id: test
-      uses: docker://hamelsmu/app-token:temp
-      env:
-        INPUT_APP_PEM: ${{ secrets.APP_PEM }}
-        INPUT_APP_ID: ${{ secrets.APP_ID }}
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v1
+      #   env:
+      #     INPUT_APP_PEM: ${{ secrets.APP_PEM }}
+      #     INPUT_APP_ID: ${{ secrets.APP_ID }}
 
-    - name: pre-build action image
-      run: |
-        cd $GITHUB_WORKSPACE
-        echo ${PASSWORD} | docker login -u $USERNAME --password-stdin
-        docker build -t hamelsmu/app-token -f prebuild.Dockerfile .
-        docker push hamelsmu/app-token 
-      env:
-        USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      # tested with https://github.com/apps/fastpages-chatops
+      - name: test
+        id: test
+        uses: docker://ezzah/actions-app-token:temp
+        env:
+          INPUT_APP_PEM: ${{ secrets.APP_PEM }}
+          INPUT_APP_ID: ${{ secrets.APP_ID }}
 
-       # tested withhttps://github.com/apps/fastpages-chatops
-    - name: final-test
-      uses: machine-learning-apps/actions-app-token@master
-      with:
-        APP_PEM: ${{ secrets.APP_PEM }}
-        APP_ID: ${{ secrets.APP_ID }}
+      - name: pre-build action image
+        run: |
+          cd $GITHUB_WORKSPACE
+          echo ${PASSWORD} | docker login -u $USERNAME --password-stdin
+          docker build -t ezzah/actions-app-token -f prebuild.Dockerfile .
+          docker push ezzah/actions-app-token
+        env:
+          USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+          # tested withhttps://github.com/apps/fastpages-chatops
+      - name: final-test
+        uses: ezzah/actions-app-token@latest
+        with:
+          APP_PEM: ${{ secrets.APP_PEM }}
+          APP_ID: ${{ secrets.APP_ID }}
